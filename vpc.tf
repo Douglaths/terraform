@@ -128,3 +128,16 @@ resource "aws_security_group" "my_security_group" {
     Name = "MySecurityGroup"
   }
 }
+
+
+# Creamos la otra instancia de EC2 en la Subred Pública 2
+resource "aws_instance" "second_public_subnet" {
+  ami                    = "ami-00f251754ac5da7f0" # Amazon Linux 2 AMI ID
+  instance_type          = "t2.micro"
+  subnet_id              = aws_subnet.second_public_subnet.id
+  key_name               = "cloud2_vpc"
+  vpc_security_group_ids = [aws_security_group.my_security_group.id]
+  tags = {
+    Name = "PublicEC2-2"
+  }
+}
