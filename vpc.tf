@@ -2,6 +2,7 @@
 provider "aws" {
   region = "us-east-1"
 }
+
 # Creamos la VPC en el rango definido
 resource "aws_vpc" "vpc_cloud_2" {
   cidr_block           = "30.0.0.0/16"
@@ -102,42 +103,3 @@ resource "aws_route_table_association" "private_association_2" {
   route_table_id = aws_route_table.private_route_table.id
 }
 
-
-# Creamos el grupo de seguridad para las instancias EC2
-resource "aws_security_group" "my_security_group" {
-  vpc_id = aws_vpc.vpc_cloud_2.id
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  tags = {
-    Name = "MySecurityGroup"
-  }
-}
-
-
-# Creamos la otra instancia de EC2 en la Subred Pública 2
-resource "aws_instance" "second_public_subnet" {
-  ami                    = "ami-00f251754ac5da7f0" # Amazon Linux 2 AMI ID
-  instance_type          = "t2.micro"
-  subnet_id              = aws_subnet.second_public_subnet.id
-  key_name               = "cloud2_vpc"
-  vpc_security_group_ids = [aws_security_group.my_security_group.id]
-  tags = {
-    Name = "PublicEC2-2"
-  }
-}
